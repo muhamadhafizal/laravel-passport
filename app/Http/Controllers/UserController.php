@@ -46,6 +46,10 @@ class UserController extends Controller
     public function details() 
     { 
         $user = Auth::user(); 
-        return response()->json(['success' => $user], $this-> successStatus); 
+        return response()->json(['success' => $user]); 
     } 
+
+    public function unauthorized(){
+        return response()->json(['error'=>'Unauthorised'], 401); 
+    }
 }
