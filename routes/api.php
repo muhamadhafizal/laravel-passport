@@ -22,5 +22,6 @@ Route::get('unauthorized', ['as' => 'unauthorized', 'uses' => 'UserController@un
 
 
 Route::group(['middleware' => 'auth:api'], function(){
-    Route::post('details', 'UserController@details');
+    Route::get('details', 'UserController@details');
+    Route::get('category', 'CategoryController@index');
     });
