@@ -14,15 +14,28 @@ class UserController extends Controller
         return response()->json('user index');
     }
 
-    public function login(){ 
-        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
-            $user = Auth::user(); 
-            $token =  $user->createToken('MyApp')-> accessToken; 
-            return response()->json(['status' => 'success', 'api_key' => $token, 'value' => $user]);
-        } 
-        else{ 
-            return response()->json(['error'=>'Unauthorised'], 401); 
-        } 
+    public function login(Request $request){
+        
+        $validator = Validator::make($request->all(),[
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json(['error'=>$validator->errors()], 401);
+        } else {
+
+            $email = $request->input('email');
+            $password = $request->input('password');
+
+            if(Auth::attempt(['email' => $email, 'password' => $password])){
+                $user = Auth::user();
+                $token = $user->createToken('MyApp')-> accessToken;
+                return response()->json(['status' => 'success', 'api_key' => $token, 'value' => $user]);
+            } else {
+                return response()->json(['error'=>'Unauthrosed'], 401);
+            }
+
+        }
     }
 
     public function register(Request $request) { 
@@ -34,7 +47,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) { 
                     return response()->json(['error'=>$validator->errors()], 401);            
-                }
+        } else {
         $input = $request->all(); 
                 $input['password'] = bcrypt($input['password']); 
                 $user = User::create($input); 
@@ -44,6 +57,7 @@ class UserController extends Controller
                 $profile = Auth::user(); 
 
         return response()->json(['status' => 'success', 'api_key' => $token, 'value' => $profile]);
+        }
     }
 
     public function details() 
