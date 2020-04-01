@@ -63,7 +63,16 @@ class UserController extends Controller
     public function details() 
     { 
         $user = Auth::user(); 
-        return response()->json(['success' => $user]); 
+        $token =  $user->createToken('MyApp');
+        $date = date('Y-m-d H:i:s');
+        $expires_date = $token->token->expires_at;
+
+        if($expires_date < $date){
+            return response()->json(['error'=>'token expired'], 402); 
+        } else {
+            return response()->json(['success' => $user]); 
+        }
+        
     } 
 
     public function unauthorized(){
